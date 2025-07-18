@@ -61,16 +61,16 @@ func DeleteProperty(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Property deleted successfully"))
 }
 
-func GetProperties(w http.ResponseWriter, r *http.Request){
+func GetProperties(w http.ResponseWriter, r *http.Request) {
 	var property []model.Property
-	
-	result:=config.DB.Find(&property)
+
+	result := config.DB.Find(&property)
 	if result.Error != nil {
 		http.Error(w, "Failed to get properties", http.StatusInternalServerError)
 		log.Printf("DB error: %v", result.Error)
 		return
 	}
-	
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(property)

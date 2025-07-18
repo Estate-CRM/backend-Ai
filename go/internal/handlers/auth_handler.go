@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strings"
 
 	"github.com/Estate-CRM/backend-go/internal/config"
 	"github.com/Estate-CRM/backend-go/internal/middlewares"
@@ -231,28 +230,11 @@ func (auth *AuthHandler) RegisterAgent(w http.ResponseWriter, r *http.Request) {
 }
 
 func (auth *AuthHandler) Testdata(w http.ResponseWriter, r *http.Request) {
-	authHeader := r.Header.Get("Authorization")
-	if authHeader == "" {
-		http.Error(w, "Missing Authorization header", http.StatusUnauthorized)
-		return
-	}
-
-	// Split the "Bearer <token>"
-	parts := strings.SplitN(authHeader, " ", 2)
-	if len(parts) != 2 || strings.ToLower(parts[0]) != "bearer" {
-		http.Error(w, "Invalid Authorization format", http.StatusUnauthorized)
-		return
-	}
-
-	tokenStr := parts[1]
-
-	claims, err := middlewares.VerifyAccessToken(tokenStr)
+	claim, err := middlewares.GetVerifiedJWTClaims(r)
 	if err != nil {
-		http.Error(w, "Invalid token: "+err.Error(), http.StatusUnauthorized)
+		http.Error(w, "Failed to verify JWT claims", http.StatusUnauthorized)
 		return
 	}
-
-	// Print extracted claims
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "Token is valid!\nEmail: %s\nRole: %s\n", claims.Email, claims.Role)
+	// Use the verified claims
+	fmt.Fprintf(w, "Email: %s\nRole: %s\n", claim.Email, claim.Role)
 }
