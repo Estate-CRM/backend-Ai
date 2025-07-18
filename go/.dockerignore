@@ -1,0 +1,8 @@
+tmp/
+tmp/
+*.exe
+*.log
+*.out
+*.test
+vendor/
+node_modules/

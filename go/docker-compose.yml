@@ -1,0 +1,18 @@
+version: "3.8"
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+      - air-tmp:/app/tmp
+    ports:
+      - "8080:8080"
+    environment:
+      - AIR_ENV=dev
+    tty: true
+    stdin_open: true
+
+volumes:
+  air-tmp:
