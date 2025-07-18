@@ -14,8 +14,6 @@ import (
 func CreateContact(w http.ResponseWriter, r *http.Request) {
 	var contact model.Contact
 
-	
-
 	if r.Header.Get("Content-Type") != "application/json" {
 		http.Error(w, "Content-Type must be application/json", http.StatusUnsupportedMediaType)
 		return
@@ -38,7 +36,6 @@ func CreateContact(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(contact)
 }
-
 
 func DeleteContact(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
@@ -64,16 +61,16 @@ func DeleteContact(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Contact deleted successfully"))
 }
 
-func GetContacts(w http.ResponseWriter, r *http.Request){
+func GetContacts(w http.ResponseWriter, r *http.Request) {
 	var contact []model.Contact
-	
-	result:=config.DB.Find(&contact)
+
+	result := config.DB.Find(&contact)
 	if result.Error != nil {
 		http.Error(w, "Failed to get contacts", http.StatusInternalServerError)
 		log.Printf("DB error: %v", result.Error)
 		return
 	}
-	
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(contact)
