@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/Estate-CRM/backend-go/internal/utils"
+	utils "github.com/Estate-CRM/backend-go/internal/pkg"
 )
 
 type AppHandler func(w http.ResponseWriter, r *http.Request) *utils.AppError

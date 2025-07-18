@@ -9,10 +9,11 @@ import (
 	"github.com/Estate-CRM/backend-go/internal/config"
 	"github.com/Estate-CRM/backend-go/internal/middlewares"
 	"github.com/Estate-CRM/backend-go/internal/model"
-	"github.com/Estate-CRM/backend-go/internal/utils"
+	"github.com/Estate-CRM/backend-go/internal/pkg"
 )
 
 type AuthHandler struct {
+
 }
 
 func (auth *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
@@ -33,7 +34,7 @@ func (auth *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid email", http.StatusUnauthorized)
 		return
 	}
-	hashPass := utils.PasswordUtils{}
+	hashPass := pkg.PasswordUtils{}
 	isValid, err := hashPass.VerifyPassword(user.Password, req.Password)
 	if err != nil {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
@@ -84,7 +85,7 @@ func (auth *AuthHandler) RegisterClient(w http.ResponseWriter, r *http.Request) 
 		http.Error(w, "Email already in use", http.StatusConflict)
 		return
 	}
-	hashPass := utils.PasswordUtils{}
+	hashPass := pkg.PasswordUtils{}
 	hashedPassword, err := hashPass.HashPassword(req.Password)
 	if err != nil {
 		http.Error(w, "Failed to hash password", http.StatusInternalServerError)
@@ -143,7 +144,7 @@ func (auth *AuthHandler) RegisterAgent(w http.ResponseWriter, r *http.Request) {
 	phone := r.FormValue("phone_number")
 	email := r.FormValue("email")
 	password := r.FormValue("password")
-	hashPass := utils.PasswordUtils{}
+	hashPass := pkg.PasswordUtils{}
 	hashedPassword, err := hashPass.HashPassword(password)
 	if err != nil {
 		http.Error(w, "Failed to hash password", http.StatusInternalServerError)
