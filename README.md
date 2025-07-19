@@ -46,21 +46,41 @@ The backend is divided into **two main services**:
   - Matchmaking (`/api/match`)
 - Connects to PostgreSQL for data storage.
 - Retrieves **contact data in paginated chunks** to optimize performance and avoid memory issues.
+
+
+
+### 2. Go Producer (`go-producer`)
 - Sends paginated JSON data to the Kafka topic (e.g., `contact-data`) for processing by Python.
+
+
+### 2. Go Consumer (`go-consumer`)
+- consume the recomondation data sent by python producer
+- Handles and stores the response for further use or integration with the main backend.
+
 
 ### 2. Python Consumer (`python-consumer`)
 - Consumes Kafka messages (JSON contact chunks).
 - Converts them to CSV files, which are then used for a recommendation model (e.g., ML-based property recommendations).
+- consume propritety batch and use teh recomandation system for each one 
 - Simple Flask setup is used for potential status reporting or lightweight endpoints.
 
----
 
+### 3. Python Producer (`python-producer`)
+- Produces recommendation results and natural-language explanations for each property test case.
+- Sends results back to the Kafka topic consumed by the Go backend (go-consumer).
+
+
+---
 ## 🔁 Data Flow
 
-1. **Client** → Sends requests to Go API (e.g., `/api/contact/getAll`).
-2. **Go Backend** → Fetches contacts from DB in chunks, publishes each chunk to Kafka.
-3. **Kafka Broker** → Buffers and streams data reliably.
-4. **Python Consumer** → Receives JSON chunks, converts to CSV, and prepares data for ML model.
+1. **Client** → Sends a request to the Go API to create or update a contact.
+2. **Go Backend** → Fetches contact data from the database in paginated chunks and publishes each chunk to Kafka.
+3. **Kafka Broker** → Buffers and streams data reliably between services.
+4. **Python Consumer** → Receives JSON chunks, converts them to CSV, and prepares the data for the ML recommendation model.
+5. **Go Producer** → Sends a batch of properties to the Python Consumer to trigger the recommendation system.
+6. **Python Producer** → After generating recommendations and explanations, sends the results back to the Go Consumer via Kafka.
+7. **Go Consumer** → Receives the recommendation results and integrates them into the backend system.
+
 
 ---
 
