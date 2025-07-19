@@ -1,11 +1,8 @@
 from flask import Flask
-from .consumer import start_consumer_thread  # ✅ relative import
+from app.routes import setup_routes
 
 app = Flask(__name__)
-
-# Optional: from .routes import setup_routes
-# setup_routes(app)
-
+setup_routes(app)
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    app.run(debug=True)
