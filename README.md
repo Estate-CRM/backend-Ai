@@ -9,10 +9,14 @@ A scalable backend for real estate CRMs using Go and Python microservices, with 
 - Poor Follow-up System: No structured way to monitor past recommendations or interactions.
 - No Smart Comparison Tools: Agents can't easily compare multiple clients or properties.
 - Paper-based Contracts: Contract generation is manual, slow, and error-prone.
-- 
+
 
 ## Solution
-
+- Smart Recommendation System
+- Client Comparison Engine
+- Kafka-Driven Real-Time Architecture
+- 
+- 
 ## Features
 - Microservices Architecture: Developed using Go and Python for modularity, scalability, and ease of maintenance.
 
@@ -28,99 +32,43 @@ A scalable backend for real estate CRMs using Go and Python microservices, with 
 
 - ID Verification: Utilizes computer vision to validate client identity documents.
 
-## ⚙️ Components Description
+---
 
-### 🔹 Go Backend (Service 1)
-- Built with Go (`golang`)
-- Responsible for:
-  - Serving secured API routes (e.g., JWT auth, validation)
-  - Fetching **paginated** data from the database
-  - Producing data to Kafka in **JSON chunks**
-- Pagination is used to avoid memory overload and improve network efficiency
+## 🧠 Architecture Overview
 
-### 🔹 Apache Kafka
-- Acts as a **bridge** between Go and Python
-- Provides a **reliable, asynchronous messaging system**
-- Enables real-time, scalable data streaming
+The backend is divided into **two main services**:
 
-### 🔹 Python Consumer (Service 2)
-- Consumes JSON messages from Kafka
-- Converts incoming contact data to **CSV format**
-- CSV data is used as input to a **recommendation model** or other ML/analytics workflows
+### 1. Go API Server (`go-backend`)
+- Implements routes for:
+  - Authentication (`/api/auth`)
+  - Contact management (`/api/contact`)
+  - Property management (`/api/property`)
+  - Matchmaking (`/api/match`)
+- Connects to PostgreSQL for data storage.
+- Retrieves **contact data in paginated chunks** to optimize performance and avoid memory issues.
+- Sends paginated JSON data to the Kafka topic (e.g., `contact-data`) for processing by Python.
+
+### 2. Python Consumer (`python-consumer`)
+- Consumes Kafka messages (JSON contact chunks).
+- Converts them to CSV files, which are then used for a recommendation model (e.g., ML-based property recommendations).
+- Simple Flask setup is used for potential status reporting or lightweight endpoints.
 
 ---
 
-## 📁 Folder Structure
+## 🔁 Data Flow
 
-```
-.
-├── docker-compose.yml         # Orchestrates Go, Python, and Kafka services
-├── go/                       # Go backend service (API, Kafka producer)
-├── flask/                    # Python consumer service (Kafka consumer, CSV, ML)
-│   ├── .gitignore
-│   ├── Dockerfile
-│   ├── requirements.txt
-│   ├── run.py
-│   ├── test.py
-│   └── app/
-└── README.md
-```
-
-- **go/**  
-  _Go backend microservice (details not shown here)_
-
-- **flask/**  
-  _Python microservice for consuming Kafka, data conversion, and ML:_
-  - `run.py` – Entrypoint for the Flask app
-  - `test.py` – Scripts or tests for Python components
-  - `requirements.txt` – Python dependencies
-  - `Dockerfile` – Container setup for the Python consumer
-  - `app/` – Application source code
-
-- **docker-compose.yml**  
-  _Development and orchestration setup for all services and Kafka broker_
+1. **Client** → Sends requests to Go API (e.g., `/api/contact/getAll`).
+2. **Go Backend** → Fetches contacts from DB in chunks, publishes each chunk to Kafka.
+3. **Kafka Broker** → Buffers and streams data reliably.
+4. **Python Consumer** → Receives JSON chunks, converts to CSV, and prepares data for ML model.
 
 ---
 
-## 🚀 Getting Started
+## 🛠️ Run with Docker
 
-### Prerequisites
-- Docker & Docker Compose
-- Go (for standalone development)
-- Python 3.8+ (for standalone development)
-
-### Quick Start
-
-```bash
-# Clone the repository
-git clone https://github.com/Estate-CRM/backend-Ai.git
-cd backend-Ai
-
-# Start all services (Go, Python, Kafka, Zookeeper)
+### 1. Build & Run All Services except python service
+bash
 docker-compose up --build
-
 python flask/run.py
+
 ```
-
----
-
-## 🛠️ Development
-
-- **Go Service:**  
-  See `/go` for API and Kafka producer code.
-
-- **Python Service:**  
-  See `/flask` for Kafka consumer and CSV/ML logic.
-
----
-
-## 📝 License
-
-Distributed under the MIT License.
-
----
-
-## 🤝 Contributing
-
-Contributions, issues, and feature requests are welcome!  
-Feel free to check the [issues page](https://github.com/Estate-CRM/backend-Ai/issues).
