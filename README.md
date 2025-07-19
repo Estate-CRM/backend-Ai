@@ -1,8 +1,32 @@
 # Estate-CRM Backend AI
 
-A scalable backend system for real estate CRMs, leveraging both Go and Python microservices, Apache Kafka for real-time streaming, and ML/analytics workflows.
+A scalable backend for real estate CRMs using Go and Python microservices, with Apache Kafka for data streaming and task scheduling. It supports AI-powered property matching and comparison, contract generation, and ID verification using computer vision.
 
 ---
+## Problems
+- Lack of market demand data
+- Manual Client Matching: Agents waste time finding the right buyers or renters for properties.
+- Poor Follow-up System: No structured way to monitor past recommendations or interactions.
+- No Smart Comparison Tools: Agents can't easily compare multiple clients or properties.
+- Paper-based Contracts: Contract generation is manual, slow, and error-prone.
+- 
+
+## Solution
+
+## Features
+- Microservices Architecture: Developed using Go and Python for modularity, scalability, and ease of maintenance.
+
+- Real-Time Data Streaming: Employs Kafka for asynchronous data flow between services using a producer-consumer model.
+
+- Task Scheduling: Automates background jobs such as batch processing and data synchronization through cron jobs.
+
+- AI-Powered Contact Matching: Matches properties with potential clients using intelligent algorithms.
+
+- Smart Comparison Engine: Generates human-like explanations comparing different clients and highlighting their similarities. This is triggered after recommendations are made.
+
+- Automated Contract Generation: Creates real estate contracts based on property and client data.
+
+- ID Verification: Utilizes computer vision to validate client identity documents.
 
 ## ⚙️ Components Description
 
