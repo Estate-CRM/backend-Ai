@@ -14,9 +14,9 @@ A scalable backend for real estate CRMs using Go and Python microservices, with 
 ## Solution
 - Smart Recommendation System
 - Client Comparison Engine
-- Kafka-Driven Real-Time Architecture
-- 
-- 
+- Kafka-Driven Real-Time Architectur
+
+  
 ## Features
 - Microservices Architecture: Developed using Go and Python for modularity, scalability, and ease of maintenance.
 
@@ -28,7 +28,7 @@ A scalable backend for real estate CRMs using Go and Python microservices, with 
 
 - Smart Comparison Engine: Generates human-like explanations comparing different clients and highlighting their similarities. This is triggered after recommendations are made.
 
-- Automated Contract Generation: Creates real estate contracts based on property and client data.
+- Contract Generation: Creates real estate contracts based on property and client data.
 
 - ID Verification: Utilizes computer vision to validate client identity documents.
 
@@ -68,7 +68,8 @@ The backend is divided into **two main services**:
 
 ### 1. Build & Run All Services except python service
 bash
-docker-compose up --build
-python flask/run.py
 
 ```
+cd backend-Ai
+docker-compose up --build
+python flask/run.py
