@@ -53,19 +53,19 @@ The backend is divided into **two main services**:
 - Sends paginated JSON data to the Kafka topic (e.g., `contact-data`) for processing by Python.
 
 
-### 2. Go Consumer (`go-consumer`)
+### 3. Go Consumer (`go-consumer`)
 - consume the recomondation data sent by python producer
 - Handles and stores the response for further use or integration with the main backend.
 
 
-### 2. Python Consumer (`python-consumer`)
+### 4. Python Consumer (`python-consumer`)
 - Consumes Kafka messages (JSON contact chunks).
 - Converts them to CSV files, which are then used for a recommendation model (e.g., ML-based property recommendations).
 - consume propritety batch and use teh recomandation system for each one 
 - Simple Flask setup is used for potential status reporting or lightweight endpoints.
 
 
-### 3. Python Producer (`python-producer`)
+### 5. Python Producer (`python-producer`)
 - Produces recommendation results and natural-language explanations for each property test case.
 - Sends results back to the Kafka topic consumed by the Go backend (go-consumer).
 
