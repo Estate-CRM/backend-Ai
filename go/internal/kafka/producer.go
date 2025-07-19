@@ -2,84 +2,67 @@ package kafka
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"time"
 
-	"github.com/Estate-CRM/backend-go/internal/config"
 	"github.com/Estate-CRM/backend-go/internal/model"
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 )
 
-func fetchContactsPage(limit, offset int) ([]model.Contact, error) {
-	var page []model.Contact
-	result := config.DB.Limit(limit).Offset(offset).Find(&page)
-	if result.Error != nil {
-		return nil, result.Error
-	}
-	return page, nil
-}
-
-func ProduceContactsPaginated(pageSize int, topic string) {
-	producer, err := kafka.NewProducer(&kafka.ConfigMap{"bootstrap.servers": "localhost:9092"})
+func StartProducer() {
+	// Create Kafka producer
+	p, err := kafka.NewProducer(&kafka.ConfigMap{
+		"bootstrap.servers": "kafka:9092",
+	})
 	if err != nil {
-		log.Fatalf("❌ Failed to create Kafka producer: %v", err)
+		log.Fatalf("❌ Failed to create producer: %s", err)
 	}
-	defer producer.Close()
+	defer p.Close()
 
+	// Handle delivery reports
 	go func() {
-		for e := range producer.Events() {
+		for e := range p.Events() {
 			switch ev := e.(type) {
 			case *kafka.Message:
 				if ev.TopicPartition.Error != nil {
 					log.Printf("❌ Delivery failed: %v\n", ev.TopicPartition.Error)
 				} else {
-					log.Printf("✅ Message delivered to %v\n", ev.TopicPartition)
+					log.Printf("✅ Delivered message to %v\n", ev.TopicPartition)
 				}
 			}
 		}
 	}()
 
-	offset := 0
-	pageNumber := 1
+	topic := "contacts-topic"
 
 	for {
-		contacts, err := fetchContactsPage(pageSize, offset)
-		if err != nil {
-			log.Printf("❌ DB error at offset %d: %v", offset, err)
-			break
+		// Simulate contact data
+		contacts := []model.Contact{
+			{ID: 1, ClientID: 101, Latitude: 36.75, Longitude: 3.06},
+			{ID: 2, ClientID: 102, Latitude: 35.69, Longitude: -0.63},
 		}
 
-		if len(contacts) == 0 {
-			log.Println("✅ All contacts processed.")
-			break
+		// Convert to JSON
+		valueBytes, err := json.Marshal(contacts)
+		if err != nil {
+			log.Printf("❌ Failed to marshal contacts: %v\n", err)
+			continue
 		}
 
-		data, err := json.Marshal(contacts)
-		if err != nil {
-			log.Printf("❌ JSON marshal failed at page %d: %v", pageNumber, err)
-			break
-		}
-	
-		fmt.Printf("Value (JSON): %s\n", string(data))
-	
-		err = producer.Produce(&kafka.Message{
-			TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: int32(kafka.PartitionAny)},
-			Value:          data,
-			Key:            []byte(fmt.Sprintf("page-%d", pageNumber)),
+		// Send message
+		err = p.Produce(&kafka.Message{
+			TopicPartition: kafka.TopicPartition{
+				Topic:     &topic,
+				Partition: int32(kafka.PartitionAny),
+			},
+			Value: valueBytes,
+			Key:   []byte("page-1"),
 		}, nil)
 
 		if err != nil {
-			log.Printf("❌ Failed to send page %d: %v", pageNumber, err)
-			break
+			log.Printf("❌ Failed to send message: %v\n", err)
 		}
 
-		log.Printf("🚀 Sent page %d with %d contacts", pageNumber, len(contacts))
-
-		offset += pageSize
-		pageNumber++
-		time.Sleep(300 * time.Millisecond) // Optional: throttle sending
+		time.Sleep(3 * time.Second)
 	}
-
-	producer.Flush(5000)
 }

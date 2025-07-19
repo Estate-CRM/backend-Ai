@@ -1,17 +1,13 @@
-# Use official Python image
-FROM python:3.11-slim
+FROM python:3.10-slim
 
-# Set working directory
+# Set working directory to /app inside the container
 WORKDIR /app
 
-# Copy all files
+# Copy everything from flask/ into /app
 COPY . .
 
-# Install dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+# Install your Kafka client
+RUN pip install confluent_kafka
 
-# Expose Flask port
-EXPOSE 5000
-
-# Run Flask app
-CMD ["python", "run.py"]
+# Run the consumer from its path inside the container
+CMD ["python", "app/consumer.py"]

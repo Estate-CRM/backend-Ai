@@ -1,7 +1,11 @@
-root = "."
-tmp_dir = "tmp"
+# .air.toml
 
 [build]
-cmd = "go build -o ./tmp/main ./cmd/server"
+cmd = "go run ./cmd/server"
 bin = "tmp/main"
-full_bin = "tmp/main"
+full_bin = "false"
+watch_dir = "."
+exclude_dir = ["tmp", "node_modules"]
+
+[log]
+time = true

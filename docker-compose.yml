@@ -39,7 +39,13 @@ services:
       - kafka
     networks:
       - app-network
-
+  python-consumer:
+    build:
+      context: ./flask # this is the folder that contains Dockerfile and `app/consumer.py`
+    depends_on:
+      - kafka
+    networks:
+      - app-network
 volumes:
   zookeeper_data:
   kafka_data:
